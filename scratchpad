@@ -1,21 +1,21 @@
 let
-    // Step 1: Load source table (change name below to your actual table name)
+    // Step 1: Load your table (change the table name as needed)
     Source = Excel.CurrentWorkbook(){[Name="YourTableName"]}[Content],
 
-    // Step 2: Group by Namespace and CleanedPackage, combine versions
+    // Step 2: Combine all versions by Namespace and CleanedPackage
     Grouped = Table.Group(Source, {"Namespace", "CleanedPackage"}, {
         {"CombinedVersions", each Text.Combine(List.Transform([Version], Text.From), ", "), type text}
     }),
 
-    // Step 3: Pivot with a safe aggregation function (Text.Combine again to flatten)
+    // Step 3: Pivot CleanedPackage — no aggregation function needed
     Pivoted = Table.Pivot(
         Grouped,
         List.Distinct(Grouped[CleanedPackage]),
         "CleanedPackage",
-        each Text.Combine({_[CombinedVersions]}, ", ")
+        "CombinedVersions"
     ),
 
-    // Step 4: Replace nulls with blank strings
+    // Step 4: Replace nulls with blanks (optional)
     Cleaned = Table.ReplaceValue(Pivoted, null, "", Replacer.ReplaceValue, Table.ColumnNames(Pivoted))
 in
     Cleaned
