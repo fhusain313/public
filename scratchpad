@@ -2,9 +2,9 @@ let
     // Step 1: Load your table
     Source = Excel.CurrentWorkbook(){[Name="YourTableName"]}[Content],
 
-    // Step 2: Group by Namespace and CleanedPackage, remove duplicate versions, combine
+    // Step 2: Group by Namespace and CleanedPackage, deduplicate and sort versions, then combine
     Grouped = Table.Group(Source, {"Namespace", "CleanedPackage"}, {
-        {"CombinedVersions", each Text.Combine(List.Distinct(List.Transform([Version], Text.From)), ", "), type text}
+        {"CombinedVersions", each Text.Combine(List.Sort(List.Distinct(List.Transform([Version], Text.From))), ", "), type text}
     })
 in
     Grouped
