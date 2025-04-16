@@ -1,21 +1,8 @@
-let
-    // Step 1: Load your table
-    Source = Excel.CurrentWorkbook(){[Name="YourTableName"]}[Content],
-
-    // Step 2: Group by Namespace and CleanedPackage, deduplicate and sort versions
-    Grouped = Table.Group(Source, {"Namespace", "CleanedPackage"}, {
-        {"CombinedVersions", each Text.Combine(List.Sort(List.Distinct(List.Transform([Version], Text.From))), ", "), type text}
-    }),
-
-    // Step 3: Pivot CleanedPackage to columns
-    Pivoted = Table.Pivot(
-        Grouped,
-        List.Distinct(Grouped[CleanedPackage]),
-        "CleanedPackage",
-        "CombinedVersions"
-    ),
-
-    // Step 4 (Optional): Replace nulls with blanks
-    Cleaned = Table.ReplaceValue(Pivoted, null, "", Replacer.ReplaceValue, Table.ColumnNames(Pivoted))
-in
-    Cleaned
+jq -r '
+  ["DisplayName", "ArgoInstance"],
+  (.entities[] | [
+    .displayName,
+    .properties.cloudApplicationLabels["argocd.argoproj.io/instance"]
+  ])
+  | @csv
+'
