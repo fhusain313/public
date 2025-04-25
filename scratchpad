@@ -33,11 +33,25 @@ pivot_df = df.pivot_table(
     aggfunc=['mean', 'max', 'min']
 )
 
-# Flatten column names
+# Flatten multi-index columns
 pivot_df.columns = ['Avg', 'Max', 'Min']
 pivot_df = pivot_df.reset_index()
+
+# Step 5a: Round values to 1 decimal place
+pivot_df[['Avg', 'Max', 'Min']] = pivot_df[['Avg', 'Max', 'Min']].round(1)
+
+# Step 5b: Add Grand Total row
+grand_total = {
+    'FormattedNamespace': 'Grand Total',
+    'Avg': round(df['Age as of Today'].mean(), 1),
+    'Max': round(df['Age as of Today'].max(), 1),
+    'Min': round(df['Age as of Today'].min(), 1),
+}
+
+pivot_df.loc[len(pivot_df)] = grand_total  # Add as last row
 
 # Step 6: Write both original and pivot to Excel
 with pd.ExcelWriter('report_with_columns_and_pivot.xlsx', engine='openpyxl') as writer:
     df.to_excel(writer, sheet_name='ProcessedData', index=False)
     pivot_df.to_excel(writer, sheet_name='Pivot', index=False)
+
