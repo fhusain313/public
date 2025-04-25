@@ -1,8 +1,5 @@
-jq -r '
-  ["DisplayName", "ArgoInstance"],
-  (.entities[] | [
-    .displayName,
-    .properties.cloudApplicationLabels["argocd.argoproj.io/instance"]
-  ])
-  | @csv
-'
+import pandas as pd
+
+df = pd.read_excel('yourfile.xlsx')
+pivot = df.pivot_table(index='Category', columns='Month', values='Sales', aggfunc='sum')
+pivot.to_excel('report.xlsx', sheet_name='PivotSummary')
