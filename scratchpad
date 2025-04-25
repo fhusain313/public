@@ -1,19 +1,27 @@
-#!/bin/bash
+import pandas as pd
+from datetime import datetime
 
-# Create virtual environment if not already present
-if [ ! -d "venv" ]; then
-  python -m venv venv
-fi
+# Load CSV file
+df = pd.read_csv('input.csv')
 
-# Detect OS and activate venv
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
-  echo "Activating virtual environment for Windows..."
-  source venv/Scripts/activate
-else
-  echo "Activating virtual environment for Unix/macOS..."
-  source venv/bin/activate
-fi
+# Step 1: Parse 'Age' column (D) to extract date and calculate days difference
+today = datetime(2025, 4, 25)
 
-# Install dependencies and run your script
-pip install -r requirements.txt
-python generate_report.py
+def compute_days_old(age_str):
+    try:
+        date_part = age_str.split(' ')[0]  # Get date before first space
+        age_date = pd.to_datetime(date_part)
+        return (today - age_date).days
+    except Exception:
+        return None  # Will become NaN in pandas
+
+df['Age as of Today'] = df['Age'].apply(compute_days_old)
+
+# Step 2: Remove rows where Age as of Today is NaN
+df = df.dropna(subset=['Age as of Today'])
+
+# Step 3: Create 'FormattedNamespace'
+df['FormattedNamespace'] = df['Namespace'].apply(lambda x: f"cmeprod/{str(x).lower()}")
+
+# Step 4: Write to Excel
+df.to_excel('report_with_columns.xlsx', index=False)
