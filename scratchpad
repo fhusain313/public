@@ -25,3 +25,19 @@ df['FormattedNamespace'] = df['Namespace'].apply(lambda x: f"cmeprod/{str(x).low
 
 # Step 4: Write to Excel
 df.to_excel('report_with_columns.xlsx', index=False)
+
+# Step 5: Create pivot table
+pivot_df = df.pivot_table(
+    index='FormattedNamespace',
+    values='Age as of Today',
+    aggfunc=['mean', 'max', 'min']
+)
+
+# Flatten column names
+pivot_df.columns = ['Avg', 'Max', 'Min']
+pivot_df = pivot_df.reset_index()
+
+# Step 6: Write both original and pivot to Excel
+with pd.ExcelWriter('report_with_columns_and_pivot.xlsx', engine='openpyxl') as writer:
+    df.to_excel(writer, sheet_name='ProcessedData', index=False)
+    pivot_df.to_excel(writer, sheet_name='Pivot', index=False)
