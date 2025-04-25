@@ -1,10 +1,14 @@
 import pandas as pd
 from datetime import datetime
 
-# Load CSV file
+# --------------------------------------
+# Step 1: Load CSV file
+# --------------------------------------
 df = pd.read_csv('input.csv')
 
-# Step 1: Parse 'Age' column (D) to extract date and calculate days difference
+# --------------------------------------
+# Step 2: Calculate "Age as of Today (4/25/2025)"
+# --------------------------------------
 today = datetime(2025, 4, 25)
 
 def compute_days_old(age_str):
@@ -13,31 +17,36 @@ def compute_days_old(age_str):
         age_date = pd.to_datetime(date_part)
         return (today - age_date).days
     except Exception:
-        return None  # Will become NaN in pandas
+        return None  # Will be NaN in pandas
 
 df['Age as of Today'] = df['Age'].apply(compute_days_old)
 
-# Step 2: Remove rows where Age as of Today is NaN
+# --------------------------------------
+# Step 3: Drop invalid rows
+# --------------------------------------
 df = df.dropna(subset=['Age as of Today'])
 
-# Step 3: Create 'FormattedNamespace'
+# --------------------------------------
+# Step 4: Add "FormattedNamespace" column
+# --------------------------------------
 df['FormattedNamespace'] = df['Namespace'].apply(lambda x: f"cmeprod/{str(x).lower()}")
 
-# Step 4: Write to Excel
-df.to_excel('report_with_columns.xlsx', index=False)
-
-# Step 5: Create initial pivot table with Avg, Max, Min
+# --------------------------------------
+# Step 5: Create pivot table with Avg, Max, Min
+# --------------------------------------
 pivot_df = df.pivot_table(
     index='FormattedNamespace',
     values='Age as of Today',
     aggfunc=['mean', 'max', 'min']
 )
 
-# Flatten columns and reset index
+# Flatten multi-index columns
 pivot_df.columns = ['Avg', 'Max', 'Min']
 pivot_df = pivot_df.reset_index()
 
-# Step 5a: Calculate count of services >= 60 days
+# --------------------------------------
+# Step 6: Add "Count of Svcs ≥60 Days"
+# --------------------------------------
 count_60 = (
     df[df['Age as of Today'] >= 60]
     .groupby('FormattedNamespace')
@@ -45,17 +54,18 @@ count_60 = (
     .reset_index(name='Count of Svcs ≥60 Days')
 )
 
-# Step 5b: Merge count into pivot table
 pivot_df = pivot_df.merge(count_60, on='FormattedNamespace', how='left')
 pivot_df['Count of Svcs ≥60 Days'] = pivot_df['Count of Svcs ≥60 Days'].fillna(0).astype(int)
 
-# Step 5c: Reorder columns
+# --------------------------------------
+# Step 7: Reorder columns and round
+# --------------------------------------
 pivot_df = pivot_df[['FormattedNamespace', 'Count of Svcs ≥60 Days', 'Avg', 'Max', 'Min']]
-
-# Step 5d: Round numeric values
 pivot_df[['Avg', 'Max', 'Min']] = pivot_df[['Avg', 'Max', 'Min']].round(1)
 
-# Step 5e: Add Grand Total row
+# --------------------------------------
+# Step 8: Add "Grand Total" row
+# --------------------------------------
 grand_total = {
     'FormattedNamespace': 'Grand Total',
     'Count of Svcs ≥60 Days': (df['Age as of Today'] >= 60).sum(),
@@ -64,3 +74,12 @@ grand_total = {
     'Min': round(df['Age as of Today'].min(), 1),
 }
 pivot_df.loc[len(pivot_df)] = grand_total
+
+# --------------------------------------
+# Step 9: Export to Excel with 2 sheets
+# --------------------------------------
+with pd.ExcelWriter('report_with_columns_and_pivot.xlsx', engine='openpyxl') as writer:
+    df.to_excel(writer, sheet_name='ProcessedData', index=False)
+    pivot_df.to_excel(writer, sheet_name='Pivot', index=False)
+
+print("Report generated: report_with_columns_and_pivot.xlsx")
