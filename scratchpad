@@ -1,30 +1,11 @@
-currentDate=$(date +%s)
-allowedCritAge=-14
-allowedHighAge=-14
+import csv, time
+from datetime import datetime
 
-awk -v now="$currentDate" -v critAge="$allowedCritAge" -v highAge="$allowedHighAge" -F',' '
-{
-  # Extract and clean fields
-  sev = gensub(/"/, "", "g", $1)
-  dateStr = gensub(/"/, "", "g", $2)
-
-  # Call date to get timestamp
-  cmd = "date -d \"" dateStr "\" +%s"
-  cmd | getline ts
-  close(cmd)
-
-  # Compute age in days
-  age = int((ts - now) / 86400)
-
-  # Decision logic
-  if (sev == "Critical" && age <= critAge) {
-    res = "blocked"
-  } else if (sev == "High" && age <= highAge) {
-    res = "blocked"
-  } else {
-    res = "ok"
-  }
-
-  # Output result
-  print res "," age "," $0
-}' vulnonly.csv
+now = int(time.time())
+with open('vulnonly.csv') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        sev = row[0].strip('"')
+        dt = datetime.strptime(row[1].strip('"'), '%Y-%m-%dT%H:%M:%SZ')
+        age = int((dt.timestamp() - now) / 86400)
+        # apply logic and print
