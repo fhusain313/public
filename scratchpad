@@ -1,11 +1,39 @@
-import csv, time
-from datetime import datetime
+import csv
+from datetime import datetime, timezone
+import time
 
+# Setup
+allowed_crit_age = -14
+allowed_high_age = -14
 now = int(time.time())
-with open('vulnonly.csv') as f:
-    reader = csv.reader(f)
+
+# Open and process the CSV
+with open('vulnonly.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile)
     for row in reader:
-        sev = row[0].strip('"')
-        dt = datetime.strptime(row[1].strip('"'), '%Y-%m-%dT%H:%M:%SZ')
-        age = int((dt.timestamp() - now) / 86400)
-        # apply logic and print
+        if len(row) < 2:
+            continue  # skip invalid lines
+
+        severity = row[0].strip('"')
+        date_str = row[1].strip('"')
+
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+            timestamp = int(dt.replace(tzinfo=timezone.utc).timestamp())
+            age = (timestamp - now) // 86400
+        except Exception as e:
+            age = "invalid"
+            result = "invalid"
+            print(f"{result},{age},{','.join(row)}")
+            continue
+
+        # Apply blocking logic
+        if severity == "Critical":
+            result = "blocked" if age <= allowed_crit_age else "ok"
+        elif severity == "High":
+            result = "blocked" if age <= allowed_high_age else "ok"
+        else:
+            result = "ok"
+
+        # Print output
+        print(f"{result},{age},{','.join(row)}")
