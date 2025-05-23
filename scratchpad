@@ -1,26 +1,30 @@
-while read -r line;
-        do lineDate=$(echo $line | cut -d , -f 2 | cut -d '"' -f 2)
-        lineAge=$(echo $(( ( $(date -d ${lineDate} +%s) - ${currentDate} ) / 86400 )))
-        sev=$(echo $line | cut -d , -f 1 | cut -d '"' -f 2)
-        case $sev in
-                "Critical")
-                        if [ "$lineAge" -le "$allowedCritAge" ]; then
-                                res="blocked"
-                        else
-                                res="ok"
-                        fi
-                        ;;
-                "High")
-                        if [ "$lineAge" -le "$allowedHighAge" ]; then
-                                res="blocked"
-                        else
-                                res="ok"
-                        fi
-                        ;;
-                *)
-                        res="ok"
-                        ;;
-        esac
-        echo "$res,$lineAge,$line"
-        res=""
-done < vulnonly.csv
+currentDate=$(date +%s)
+allowedCritAge=-14
+allowedHighAge=-14
+
+awk -v now="$currentDate" -v critAge="$allowedCritAge" -v highAge="$allowedHighAge" -F',' '
+{
+  # Extract and clean fields
+  sev = gensub(/"/, "", "g", $1)
+  dateStr = gensub(/"/, "", "g", $2)
+
+  # Call date to get timestamp
+  cmd = "date -d \"" dateStr "\" +%s"
+  cmd | getline ts
+  close(cmd)
+
+  # Compute age in days
+  age = int((ts - now) / 86400)
+
+  # Decision logic
+  if (sev == "Critical" && age <= critAge) {
+    res = "blocked"
+  } else if (sev == "High" && age <= highAge) {
+    res = "blocked"
+  } else {
+    res = "ok"
+  }
+
+  # Output result
+  print res "," age "," $0
+}' vulnonly.csv
