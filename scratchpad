@@ -1,10 +1,26 @@
-awk -v now="$(date +%s)" '{
-  cmd = "date -d \"" $NF "\" +%s"
-  cmd | getline ts
-  close(cmd)
-  days = int((ts - now) / 86400)
-  print days, $0
-}' data.txt
-
-
-
+while read -r line;
+        do lineDate=$(echo $line | cut -d , -f 2 | cut -d '"' -f 2)
+        lineAge=$(echo $(( ( $(date -d ${lineDate} +%s) - ${currentDate} ) / 86400 )))
+        sev=$(echo $line | cut -d , -f 1 | cut -d '"' -f 2)
+        case $sev in
+                "Critical")
+                        if [ "$lineAge" -le "$allowedCritAge" ]; then
+                                res="blocked"
+                        else
+                                res="ok"
+                        fi
+                        ;;
+                "High")
+                        if [ "$lineAge" -le "$allowedHighAge" ]; then
+                                res="blocked"
+                        else
+                                res="ok"
+                        fi
+                        ;;
+                *)
+                        res="ok"
+                        ;;
+        esac
+        echo "$res,$lineAge,$line"
+        res=""
+done < vulnonly.csv
