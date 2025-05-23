@@ -1,7 +1,10 @@
-jq -r '
-  .vulnerabilityID as $id
-  | .vulnerabilityID.images[] as $img
-  | $img.artifacts[] 
-  | [$id, $img.context, .artifactName]
-  | @csv
-' input.json
+awk -v now="$(date +%s)" '{
+  cmd = "date -d \"" $NF "\" +%s"
+  cmd | getline ts
+  close(cmd)
+  days = int((ts - now) / 86400)
+  print days, $0
+}' data.txt
+
+
+
