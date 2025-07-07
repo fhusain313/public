@@ -4,16 +4,25 @@ SELECT *,
     ELSE "NO"
   END AS 'OVERDUE?',
 
-  CASE
-    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN T1.'Resolved'
-    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN T1.'Estimated Date to Remediate'
-    ELSE FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
-  END AS 'ReportedRemediationDate',
+  IFNULL(
+    IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+    FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
+  ) AS 'ReportedRemediationDate',
 
   CASE
-    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN 'Used Resolved'
-    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN 'Used Estimate'
+    WHEN T1.'Resolved' IS NOT NULL THEN 'Used Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL THEN 'Used Estimate'
     ELSE 'Used Default'
   END AS 'Source Used'
 
+FROM T1
+
+===
+
+SELECT *,
+  CASE
+    WHEN T1.'Resolved' IS NOT NULL THEN 'Used Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL THEN 'Used Estimate'
+    ELSE 'Used Default'
+  END AS 'Source Used'
 FROM T1
