@@ -1,13 +1,42 @@
 SELECT *,
   CASE
-    WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN 'YES'
-    ELSE 'NO'
+    WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN "YES"
+    ELSE "NO"
   END AS 'OVERDUE?',
 
   CASE
-    WHEN T1.'ResolvedDate' IS NOT NULL AND T1.'ResolvedDate' != '' THEN T1.'ResolvedDate'
-    WHEN T1.'EstimatedDateToRemediate' IS NOT NULL AND T1.'EstimatedDateToRemediate' != '' THEN T1.'EstimatedDateToRemediate'
+    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN T1.'Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN T1.'Estimated Date to Remediate'
     ELSE CONCAT(CAST(YEAR(CURRENT_DATE) + 1 AS STRING), '-01-01')
   END AS 'ReportedRemediationDate'
 
 FROM T1
+
+===========
+
+SELECT 'Resolved', 'Estimated Date to Remediate' FROM T1
+
+===========
+
+SELECT *,
+  CASE
+    WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN "YES"
+    ELSE "NO"
+  END AS 'OVERDUE?',
+
+  CASE
+    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN T1.'Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN T1.'Estimated Date to Remediate'
+    ELSE CONCAT(CAST(YEAR(CURRENT_DATE) + 1 AS STRING), '-01-01')
+  END AS 'ReportedRemediationDate',
+
+  CASE
+    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN 'Used Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN 'Used Estimate'
+    ELSE 'Used Default'
+  END AS 'Source Used'
+
+FROM T1
+
+========
+
