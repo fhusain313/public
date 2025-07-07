@@ -9,19 +9,43 @@ SELECT *,
     FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
   ) AS 'ReportedRemediationDate',
 
-  FORMATDATE(
-    DATE(
-      IFNULL(
-        IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-        CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
+  SUBSTRING(
+    FORMATDATE(
+      DATE(
+        IFNULL(
+          IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+          CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
+        )
       )
     ),
-    'MMM yyyy'
+    4, 8
   ) AS 'FormattedResolution',
 
   CASE
-    WHEN LOWER(TRIM(T1.'Status')) = 'closed' OR LOWER(TRIM(T1.'Status')) = 'resolved' THEN 'Resolved'
+    WHEN LOWER(TRIM(T1.'Status')) = 'closed' THEN 'Resolved'
+    WHEN LOWER(TRIM(T1.'Status')) = 'resolved' THEN 'Resolved'
     ELSE 'Open'
   END AS 'FormattedStatus'
 
 FROM T1
+
+====
+
+SELECT DISTINCT TRIM(T1.'Status') AS 'RawStatus', 
+       LOWER(TRIM(T1.'Status')) AS 'LowerStatus' 
+FROM T1
+
+---
+
+CASE
+  WHEN LOWER(TRIM(T1.'Status')) LIKE 'closed' THEN 'Resolved'
+  WHEN LOWER(TRIM(T1.'Status')) LIKE 'resolved' THEN 'Resolved'
+  ELSE 'Open'
+END AS 'FormattedStatus'
+
+----
+
+CASE
+  WHEN T1.'Status' = T1.'Status' THEN 'Fallback Works'
+  ELSE 'Fallback Fails'
+END AS 'TestColumn'
