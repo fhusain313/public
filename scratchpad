@@ -1,14 +1,46 @@
-IFNULL(
-  IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-  "2026-01-31"
-) AS 'ReportedRemediationDate'
+SELECT 'Label',
+  T1.'2025-01',
+  T1.'2025-02',
+  T1.'2025-03',
+  T1.'2025-04',
+  T1.'2025-05',
+  T1.'2025-06',
+  T1.'2025-07',
+  T1.'2025-08',
+  T1.'2025-09',
+  T1.'2025-10',
+  T1.'2025-11',
+  T1.'2025-12'
+FROM (
+  SELECT 'FormattedDue' AS 'Label',
+    T1.'2025-01',
+    T1.'2025-02',
+    T1.'2025-03',
+    T1.'2025-04',
+    T1.'2025-05',
+    T1.'2025-06',
+    T1.'2025-07',
+    T1.'2025-08',
+    T1.'2025-09',
+    T1.'2025-10',
+    T1.'2025-11',
+    T1.'2025-12'
+  FROM T1
 
-==============
+  UNION ALL
 
-IFNULL(
-  IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-  CONCAT(
-    CAST(YEAR(CURRENT_DATE) + 1 AS STRING),
-    '-01-31'
-  )
-)
+  SELECT 'FormattedResolution' AS 'Label',
+    T2.'2025-01',
+    T2.'2025-02',
+    T2.'2025-03',
+    T2.'2025-04',
+    T2.'2025-05',
+    T2.'2025-06',
+    T2.'2025-07',
+    T2.'2025-08',
+    T2.'2025-09',
+    T2.'2025-10',
+    T2.'2025-11',
+    T2.'2025-12'
+  FROM T2
+) AS Combined
