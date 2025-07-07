@@ -1,5 +1,14 @@
-SELECT
-  CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-31' AS 'TargetDate',
-  DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-31') AS 'ParsedDate',
-  FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-31')) AS 'FormattedDate'
-FROM T1
+IFNULL(
+  IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+  "2026-01-31"
+) AS 'ReportedRemediationDate'
+
+==============
+
+IFNULL(
+  IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+  CONCAT(
+    CAST(YEAR(CURRENT_DATE) + 1 AS STRING),
+    '-01-31'
+  )
+)
