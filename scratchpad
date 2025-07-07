@@ -9,20 +9,19 @@ SELECT *,
     FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
   ) AS 'ReportedRemediationDate',
 
+  -- Extract YYYY-MM from ReportedRemediationDate
+  SUBSTRING(
+    IFNULL(
+      IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+      FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
+    ),
+    1, 7
+  ) AS 'FormattedResolution',
+
+  -- Normalize Status
   CASE
-    WHEN T1.'Resolved' IS NOT NULL THEN 'Used Resolved'
-    WHEN T1.'Estimated Date to Remediate' IS NOT NULL THEN 'Used Estimate'
-    ELSE 'Used Default'
-  END AS 'Source Used'
+    WHEN T1.'Status' IN ('Closed', 'Resolved') THEN 'Resolved'
+    ELSE 'Open'
+  END AS 'FormattedStatus'
 
-FROM T1
-
-===
-
-SELECT *,
-  CASE
-    WHEN T1.'Resolved' IS NOT NULL THEN 'Used Resolved'
-    WHEN T1.'Estimated Date to Remediate' IS NOT NULL THEN 'Used Estimate'
-    ELSE 'Used Default'
-  END AS 'Source Used'
 FROM T1
