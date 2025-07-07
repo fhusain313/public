@@ -5,14 +5,14 @@ SELECT *,
   END AS 'OVERDUE?',
 
   CASE
-    WHEN T1.'Resolved' = T1.'Resolved' THEN T1.'Resolved'
-    WHEN T1.'Estimated Date to Remediate' = T1.'Estimated Date to Remediate' THEN T1.'Estimated Date to Remediate'
-    ELSE CONCAT(CAST(YEAR(CURRENT_DATE) + 1 AS STRING), '-01-01')
+    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN T1.'Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN T1.'Estimated Date to Remediate'
+    ELSE FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
   END AS 'ReportedRemediationDate',
 
   CASE
-    WHEN T1.'Resolved' = T1.'Resolved' THEN 'Used Resolved'
-    WHEN T1.'Estimated Date to Remediate' = T1.'Estimated Date to Remediate' THEN 'Used Estimate'
+    WHEN T1.'Resolved' IS NOT NULL AND T1.'Resolved' != '' THEN 'Used Resolved'
+    WHEN T1.'Estimated Date to Remediate' IS NOT NULL AND T1.'Estimated Date to Remediate' != '' THEN 'Used Estimate'
     ELSE 'Used Default'
   END AS 'Source Used'
 
