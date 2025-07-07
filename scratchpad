@@ -1,1 +1,13 @@
-pgAdmin is a widely used, open-source administration and development platform for PostgreSQL databases that provides a secure, efficient, and user-friendly interface for managing and querying databases. Approving pgAdmin supports database administrators and developers in performing critical tasks such as schema design, performance monitoring, and data analysis with increased accuracy and productivity. Its compatibility with enterprise security standards, active community support, and frequent updates ensure ongoing stability and compliance, making it a cost-effective tool that aligns with organizational goals for robust data management and streamlined development workflows.
+SELECT *,
+  CASE
+    WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN 'YES'
+    ELSE 'NO'
+  END AS 'OVERDUE?',
+
+  CASE
+    WHEN T1.'ResolvedDate' IS NOT NULL AND T1.'ResolvedDate' != '' THEN T1.'ResolvedDate'
+    WHEN T1.'EstimatedDateToRemediate' IS NOT NULL AND T1.'EstimatedDateToRemediate' != '' THEN T1.'EstimatedDateToRemediate'
+    ELSE FORMATDATE(DATEADD(year, 1, DATE_TRUNC('year', CURRENT_DATE)))
+  END AS 'ReportedRemediationDate'
+
+FROM T1
