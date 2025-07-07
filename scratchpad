@@ -9,25 +9,19 @@ SELECT *,
     FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
   ) AS 'ReportedRemediationDate',
 
-  SUBSTRING(
-    FORMATDATE(
-      DATE(
-        IFNULL(
-          IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-          CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
-        )
+  FORMATDATE(
+    DATE(
+      IFNULL(
+        IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+        CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
       )
     ),
-    1, 7
+    'MMM yyyy'
   ) AS 'FormattedResolution',
 
   CASE
-    WHEN T1.'Status' = 'Closed' OR T1.'Status' = 'Resolved' THEN 'Resolved'
+    WHEN LOWER(TRIM(T1.'Status')) = 'closed' OR LOWER(TRIM(T1.'Status')) = 'resolved' THEN 'Resolved'
     ELSE 'Open'
   END AS 'FormattedStatus'
 
 FROM T1
-
------
-
-SELECT 'Status' FROM T1
