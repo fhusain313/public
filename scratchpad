@@ -32,43 +32,39 @@ FROM T1
 ###########################################
 
 SELECT *,
+  CASE
+    WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN "YES"
+    ELSE "NO"
+  END AS 'OVERDUE?',
+
+  IFNULL(
+    IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+    FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
+  ) AS 'ReportedRemediationDate',
+
+  SUBSTRING(
+    FORMATDATE(
+      DATE(
+        IFNULL(
+          IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
+          CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
+        )
+      )
+    ),
+    4, 8
+  ) AS 'FormattedResolution',
+
   IF(
-    T2.'StatusClean' = 'closed',
+    TRIM(LOWER(T1.'Status')) = 'closed',
     'Resolved',
     IF(
-      T2.'StatusClean' = 'resolved',
+      TRIM(LOWER(T1.'Status')) = 'resolved',
       'Resolved',
       'Open'
     )
   ) AS 'FormattedStatus'
-FROM (
-  SELECT *,
-    TRIM(LOWER(T1.'Status')) AS 'StatusClean',
 
-    CASE
-      WHEN DATEDIFF(day, "today", T1.'Due') <= 0 THEN "YES"
-      ELSE "NO"
-    END AS 'OVERDUE?',
-
-    IFNULL(
-      IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-      FORMATDATE(DATE(CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'))
-    ) AS 'ReportedRemediationDate',
-
-    SUBSTRING(
-      FORMATDATE(
-        DATE(
-          IFNULL(
-            IFNULL(T1.'Resolved', T1.'Estimated Date to Remediate'),
-            CAST(YEAR(CURRENT_DATE) + 1 AS STRING) || '-01-01'
-          )
-        )
-      ),
-      4, 8
-    ) AS 'FormattedResolution'
-
-  FROM T1
-) AS T2
+FROM T1
 
 
 
