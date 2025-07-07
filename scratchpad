@@ -7,7 +7,7 @@ SELECT *,
   CASE
     WHEN T1.'ResolvedDate' IS NOT NULL AND T1.'ResolvedDate' != '' THEN T1.'ResolvedDate'
     WHEN T1.'EstimatedDateToRemediate' IS NOT NULL AND T1.'EstimatedDateToRemediate' != '' THEN T1.'EstimatedDateToRemediate'
-    ELSE FORMATDATE(DATEADD(year, 1, DATE_TRUNC('year', CURRENT_DATE)))
+    ELSE CONCAT(CAST(YEAR(CURRENT_DATE) + 1 AS STRING), '-01-01')
   END AS 'ReportedRemediationDate'
 
 FROM T1
