@@ -1,17 +1,33 @@
-SELECT 
-  CASE WHEN T1.Label = 'Total' THEN 'FormattedDue' ELSE T1.Label END AS Label,
-  T1.'Count 2025-01',
-  T1.'Count 2025-02',
-  -- add other month columns here
-  T1.'Count 2025-12'
+SELECT
+  'FormattedDue' AS 'Label',
+  T1."Count 2025-01",
+  T1."Count 2025-02",
+  T1."Count 2025-03",
+  T1."Count 2025-04",
+  T1."Count 2025-05",
+  T1."Count 2025-06",
+  T1."Count 2025-07",
+  T1."Count 2025-08",
+  T1."Count 2025-09",
+  T1."Count 2025-10",
+  T1."Count 2025-11",
+  T1."Count 2025-12"
 FROM T1
 
 UNION ALL
 
-SELECT 
-  CASE WHEN T2.Label = 'Total' THEN 'FormattedResolution' ELSE T2.Label END AS Label,
-  T2.'Count 2025-01',
-  T2.'Count 2025-02',
-  -- add other month columns here
-  T2.'Count 2025-12'
+SELECT
+  'FormattedResolution' AS 'Label',
+  T2."Count 2025-01",
+  T2."Count 2025-02",
+  T2."Count 2025-03",
+  T2."Count 2025-04",
+  T2."Count 2025-05",
+  T2."Count 2025-06",
+  T2."Count 2025-07",
+  T2."Count 2025-08",
+  T2."Count 2025-09",
+  T2."Count 2025-10",
+  T2."Count 2025-11",
+  T2."Count 2025-12"
 FROM T2
