@@ -1,11 +1,31 @@
 SELECT
-  T1.'Month',
-  T1.'Count',
-  T1.'Source',
-  SUM(T2.'Count') AS 'Cumulative Count'
-FROM T1
-JOIN T1 AS T2
-  ON T1.'Source' = T2.'Source'
- AND T2.'Month' <= T1.'Month'
-GROUP BY T1.'Month', T1.'Count', T1.'Source'
-ORDER BY T1.'Source', T1.'Month'
+  M."Month",
+  S."Source",
+  (
+    SELECT SUM(T2."Count")
+    FROM T1 AS T2
+    WHERE T2."Source" = S."Source"
+      AND T2."Month" <= M."Month"
+  ) AS "Cumulative Count"
+FROM
+  (
+    SELECT DISTINCT "Month" FROM T1
+    UNION
+    SELECT '2025-01'
+    UNION SELECT '2025-02'
+    UNION SELECT '2025-03'
+    UNION SELECT '2025-04'
+    UNION SELECT '2025-05'
+    UNION SELECT '2025-06'
+    UNION SELECT '2025-07'
+    UNION SELECT '2025-08'
+    UNION SELECT '2025-09'
+    UNION SELECT '2025-10'
+    UNION SELECT '2025-11'
+    UNION SELECT '2025-12'
+  ) AS M
+JOIN
+  (SELECT DISTINCT "Source" FROM T1) AS S
+ORDER BY
+  S."Source",
+  M."Month"
