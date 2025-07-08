@@ -1,31 +1,30 @@
 SELECT
-  M."Month",
-  S."Source",
+  AllMonths."Month",
+  Sources."Source",
   (
-    SELECT SUM(T2."Count")
-    FROM T1 AS T2
-    WHERE T2."Source" = S."Source"
-      AND T2."Month" <= M."Month"
+    SELECT SUM(Data."Count")
+    FROM T1 AS Data
+    WHERE Data."Source" = Sources."Source"
+      AND Data."Month" <= AllMonths."Month"
   ) AS "Cumulative Count"
 FROM
   (
-    SELECT DISTINCT "Month" FROM T1
-    UNION
-    SELECT '2025-01'
-    UNION SELECT '2025-02'
-    UNION SELECT '2025-03'
-    UNION SELECT '2025-04'
-    UNION SELECT '2025-05'
-    UNION SELECT '2025-06'
-    UNION SELECT '2025-07'
-    UNION SELECT '2025-08'
-    UNION SELECT '2025-09'
-    UNION SELECT '2025-10'
-    UNION SELECT '2025-11'
-    UNION SELECT '2025-12'
-  ) AS M
-JOIN
-  (SELECT DISTINCT "Source" FROM T1) AS S
+    SELECT '2025-01' AS "Month" UNION
+    SELECT '2025-02' UNION
+    SELECT '2025-03' UNION
+    SELECT '2025-04' UNION
+    SELECT '2025-05' UNION
+    SELECT '2025-06' UNION
+    SELECT '2025-07' UNION
+    SELECT '2025-08' UNION
+    SELECT '2025-09' UNION
+    SELECT '2025-10' UNION
+    SELECT '2025-11' UNION
+    SELECT '2025-12'
+  ) AS AllMonths
+CROSS JOIN (
+  SELECT DISTINCT "Source" FROM T1
+) AS Sources
 ORDER BY
-  S."Source",
-  M."Month"
+  Sources."Source",
+  AllMonths."Month"
