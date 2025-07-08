@@ -1,13 +1,11 @@
 SELECT
-  T1."Month" || '-01' AS "Month",
-  T1."FormattedDue",
-  T1."FormattedResolution"
+  T1.'Month',
+  T1.'Count',
+  T1.'Source',
+  SUM(T2.'Count') AS 'Cumulative Count'
 FROM T1
-
-===
-
-SELECT
-  FORMATDATE(DATE(T1."Month" || '-01'), 'MMMM yyyy') AS "Month",
-  T1."FormattedDue",
-  T1."FormattedResolution"
-FROM T1
+JOIN T1 AS T2
+  ON T1.'Source' = T2.'Source'
+ AND T2.'Month' <= T1.'Month'
+GROUP BY T1.'Month', T1.'Count', T1.'Source'
+ORDER BY T1.'Source', T1.'Month'
