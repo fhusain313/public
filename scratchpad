@@ -1,23 +1,11 @@
 SELECT
-  T1.'FormattedDue' AS 'Month',
-  COUNT(*) AS 'Count',
-  'FormattedDue' AS 'Source'
+  T1."Month",
+  T1."Count",
+  T1."Source",
+  SUM(T2."Count") AS "Cumulative Count"
 FROM T1
-GROUP BY T1.'FormattedDue'
-ORDER BY T1.'FormattedDue'
-
-========
-
-SELECT
-  T1.'FormattedResolution' AS 'Month',
-  COUNT(*) AS 'Count',
-  'FormattedResolution' AS 'Source'
-FROM T1
-GROUP BY T1.'FormattedResolution'
-ORDER BY T1.'FormattedResolution'
-
-========
-
-SELECT * FROM T1
-UNION ALL
-SELECT * FROM T2
+JOIN T1 AS T2
+  ON T1."Source" = T2."Source"
+ AND T2."Month" <= T1."Month"
+GROUP BY T1."Month", T1."Count", T1."Source"
+ORDER BY T1."Source", T1."Month"
