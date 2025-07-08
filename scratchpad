@@ -1,11 +1,16 @@
 SELECT
-  T1."Month",
-  T1."Count",
-  T1."Source",
-  SUM(T2."Count") AS "Cumulative Count"
+  T1."Source / Month" AS "Label",
+  T1."2025-01",
+  T1."2025-02",
+  T1."2025-03",
+  T1."2025-04",
+  T1."2025-05",
+  T1."2025-06",
+  T1."2025-07",
+  T1."2025-08",
+  T1."2025-09",
+  T1."2025-10",
+  T1."2025-11",
+  T1."2025-12"
 FROM T1
-JOIN T1 AS T2
-  ON T1."Source" = T2."Source"
- AND T2."Month" <= T1."Month"
-GROUP BY T1."Month", T1."Count", T1."Source"
-ORDER BY T1."Source", T1."Month"
+WHERE T1."Source / Month" != 'Total'
