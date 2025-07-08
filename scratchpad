@@ -1,79 +1,13 @@
 SELECT
-  "Month",
-  MAX(CASE WHEN "Label" = 'FormattedDue' THEN "Value" END) AS "FormattedDue",
-  MAX(CASE WHEN "Label" = 'FormattedResolution' THEN "Value" END) AS "FormattedResolution"
-FROM (
-  SELECT
-    "Label",
-    '2025-01-01' AS "Month",
-    "2025-01" AS "Value"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-02-01',
-    "2025-02"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-03-01',
-    "2025-03"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-04-01',
-    "2025-04"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-05-01',
-    "2025-05"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-06-01',
-    "2025-06"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-07-01',
-    "2025-07"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-08-01',
-    "2025-08"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-09-01',
-    "2025-09"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-10-01',
-    "2025-10"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-11-01',
-    "2025-11"
-  FROM T1
-  UNION ALL
-  SELECT
-    "Label",
-    '2025-12-01',
-    "2025-12"
-  FROM T1
-) AS Raw
-GROUP BY "Month"
-ORDER BY "Month"
+  T1."Month" || '-01' AS "Month",
+  T1."FormattedDue",
+  T1."FormattedResolution"
+FROM T1
+
+===
+
+SELECT
+  FORMATDATE(DATE(T1."Month" || '-01'), 'MMMM yyyy') AS "Month",
+  T1."FormattedDue",
+  T1."FormattedResolution"
+FROM T1
