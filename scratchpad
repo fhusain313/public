@@ -8,26 +8,22 @@
 
 ---
 
-<dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>10.1.43</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-websocket</artifactId>
-      <version>10.1.43</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-el</artifactId>
-      <version>10.1.43</version>
-    </dependency>
-  </dependencies>
-</dependencyManagement>
+Goal	                                  Tool/Command
+View resolved POM	                      mvn help:effective-pom
+This combines your pom.xml and all of the parents poms in a long consolidated pom
 
+Trace version source (BOM, parent)	    mvn dependency:tree -Dverbose
+We can see which transitive dependencies are pulled, with the -Dverbose we can see 
+if it's managed by a BOM or via DependencyManagement, if it is overridden by conflicts, 
+and also if it is excluded, optional, or transitive
 
----
+See settings.xml sources                mvn help:effective-settings
+This doesn’t help with dependency versions, but it helps you see mirror repositories, activeProfiles, etc., which may affect resolution.
 
+See property sources	                  mvn help:all-profiles
+This will show inherited profiles and properties — helpful to see which POMs contributed properties, especially if coming from parent POMs or BOMs.
+
+Find dependency updates	                mvn versions:display-dependency-updates
+Which versions are locked
+Which are overridden or can be updated
+Where they’re coming from (direct vs managed)
