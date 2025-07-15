@@ -1,6 +1,33 @@
-Developer Screening
-Our organization has implemented a structured and quantitatively managed approach to developer screening. Access control is enforced using a combination of Okta, SailPoint, and Active Directory, with all CI/CD tools governed by RBAC policies maintained by the Platform Engineering team. Developers undergo skill-based screening during the hiring process, and access provisioning follows a formal joiner-mover-leaver (JML) process with tracked service-level metrics. Access reviews are conducted regularly to ensure alignment with least-privilege principles. While ongoing skills development is not formally tracked through an LMS, secure development responsibilities are aligned with role expectations. These controls ensure that only authorized and appropriately skilled personnel have access to critical systems and code repositories.
+<properties>
+  <custom.tomcat.version>10.1.43</custom.tomcat.version>
+</properties>
 
-Developer Configuration Management
-We maintain a robust configuration management process across the software development lifecycle, with strong controls in place to ensure consistency, integrity, and security. All applications are containerized and deployed to Kubernetes using GitOps practices via Harness.io, with environments defined as code and continuously reconciled. Policy enforcement is handled through OPA (Open Policy Agent) integrated into Harness, allowing for automated gating and configuration validation at the pipeline level. All Docker base images must be approved through our Technical Review Management (TRM) process and are stored within a controlled internal Artifactory repository. Additionally, SBOMs are generated automatically for every build using Anchore, with tickets created for any detected vulnerabilities. These practices, combined with drift-resistant deployment mechanisms and a hardened software supply chain, provide a high degree of control and traceability across development and runtime environments.
+---
+
+<version>${custom.tomcat.version}</version>
+
+---
+
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+      <version>10.1.43</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-websocket</artifactId>
+      <version>10.1.43</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-el</artifactId>
+      <version>10.1.43</version>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+
+
+---
 
