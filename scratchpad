@@ -1,0 +1,44 @@
+$ git config --global credential.helper store
+$ git config --global credential.UseHttpPath true
+
+############### Setup also for SSH Access
+# ssh-keygen -t ed25519 -C "FAHD.HUSAIN@associates.cbp.dhs.gov"
+# cat ~/.ssh/id_ed25519.pub | clip
+# ssh -T git@gitlab.cbp.dhs.gov
+
+############### Normal Workflow
+# pull any changes from remote master branch, (if you want to keep local files and merge manually use git fetch)
+git pull origin master
+
+# create a new branch and switch to it
+git checkout -b 20250724
+
+# after you've made changes 
+git status
+
+# add them to branch and commit with msg
+git commit -am <msg>
+
+# push changes back to remote
+git push --set-upstream origin 20250724
+git push origin master
+
+############### Switch branch
+git checkout <branchname>
+
+############### Create new branch and switch
+git checkout -b <branch>
+
+############### Discard local changes
+git reset --hard
+
+############### Files are not being deleted even if in .gitignore
+git rm --cached <file>
+git commit -m "cleaning up repo"
+git push origin master
+
+############### Idea - Main point
+You make your normal changes to your file
+Then you either add or remove those files from your commit (git add or git rm)
+then you commit changes
+then you push back to the origin
